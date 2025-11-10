@@ -4,7 +4,7 @@ Aplicación que gestiona listas de compras, desarrollado con Ionic Angular.
 
 ## Descripción
 
-La aplicación permite a los usuarios crear y gestionar múltiples listas de compras. Los ítems se pueden categorizar (Aseo, Comida, etc.), marcar como completados y las listas pueden ser guardadas para ser reutilizadas.
+La aplicación permite a los usuarios crear y gestionar múltiples listas de compras. Los ítems se pueden ingresar, marcar como completados y las listas pueden ser guardadas para ser reutilizadas.
 
 ## Cómo levantar el proyecto
 

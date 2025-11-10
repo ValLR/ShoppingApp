@@ -1,13 +1,15 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>Register</ion-title>
+    <ion-title>Registrate</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Register</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ion-input label="Usuario" label-placement="floating"></ion-input>
+  <ion-input label="Clave" label-placement="floating" type="password"></ion-input>
+  <ion-input label="Confirmar Clave" label-placement="floating" type="password"></ion-input>
+  <ion-button expand="block" (click)="register()">Crear Cuenta</ion-button>
 </ion-content>
