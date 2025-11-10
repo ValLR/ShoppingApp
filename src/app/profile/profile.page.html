@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mi perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <div class="profile-card">
+    <div class="avatar">
+      {{ user ? (user[0] | uppercase) : 'U' }}
+    </div>
+    <div>
+      <h2 class="name">{{ user || 'Usuario' }}</h2>
+      <p class="muted">Cuenta de ShoppingList</p>
+    </div>
+  </div>
+
+  <ion-list inset>
+    <ion-list-header>Resumen de uso</ion-list-header>
+    <ion-item>
+      <ion-label>Listas creadas</ion-label>
+      <ion-note slot="end">{{ totalLists }}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>Última lista</ion-label>
+      <ion-note slot="end">{{ lastListId }}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>Ítems totales</ion-label>
+      <ion-note slot="end">{{ totalItems }}</ion-note>
+    </ion-item>
+  </ion-list>
+
+  <ion-list inset>
+    <ion-list-header>Preferencias</ion-list-header>
+    <ion-item>
+      <ion-label>Tema oscuro</ion-label>
+      <ion-toggle slot="end" disabled></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>Idioma</ion-label>
+      <ion-note slot="end">Español</ion-note>
+    </ion-item>
+  </ion-list>
+  <div class="logout-button-container">
+    <ion-button (click)="logout()">
+      Cerrar sesión
+    </ion-button>
+  </div>
+  <div class="about-box">
+    <p class="muted">Versión 0.1.0</p>
+    <p class="muted">Demo Ionic + Angular</p>
+  </div>
+
+</ion-content>

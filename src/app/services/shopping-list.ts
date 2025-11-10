@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ShoppingList, ShoppingItem } from '../models/shopping.models'; // Importa tus tipos
+import { ShoppingList, ShoppingItem } from '../models/shopping.models';
 
 @Injectable({
   providedIn: 'root'

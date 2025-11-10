@@ -24,10 +24,9 @@ const routes: Routes = [
     loadChildren: () => import('./list-view/list-view.module').then( m => m.ListViewPageModule)
   },
   {
-    path: 'add-item',
-    loadChildren: () => import('./add-item/add-item.module').then( m => m.AddItemPageModule)
+    path: 'profile',
+    loadChildren: () => import('./profile/profile.module').then(m => m.ProfilePageModule)
   },
-
 ];
 
 @NgModule({

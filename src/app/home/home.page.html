@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title #animatedMainTitle>¡Hola, {{ user }}!</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToProfile()">
+        <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

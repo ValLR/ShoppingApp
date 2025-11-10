@@ -1,0 +1,49 @@
+ion-content {
+  --background: var(--app-background);
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 1.25rem 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 9999px;
+  background: var(--ion-color-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.25rem;
+  display: grid;
+  place-items: center;
+}
+
+.name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.muted {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.about-box {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.75rem;
+}
+
+.logout-button-container {
+  text-align: center;
+  margin-top: 1rem;
+}

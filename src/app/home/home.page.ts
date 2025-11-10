@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AnimationController, AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +11,7 @@ import { ShoppingListService } from '../services/shopping-list';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, RouterModule],
 })
 
 export class HomePage implements OnInit {
@@ -88,7 +88,13 @@ export class HomePage implements OnInit {
     });
   }
 
-async createNewList() {
+  goToProfile() {
+    this.router.navigate(['/profile'], {
+      queryParams: { user: this.user }
+    });
+  }
+
+  async createNewList() {
     const alert = await this.alertCtrl.create({
       header: 'Nueva Lista',
       inputs: [
