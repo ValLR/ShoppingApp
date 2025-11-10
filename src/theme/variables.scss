@@ -1,2 +1,59 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
+/* Paleta app */
+:root {
+  /* primario: azul-violeta */
+  --ion-color-primary: #4f46e5;
+  --ion-color-primary-rgb: 79, 70, 229;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #443ec9;
+  --ion-color-primary-tint: #6259e8;
+
+  /* secundario: verde-agua */
+  --ion-color-secondary: #14b8a6;
+  --ion-color-secondary-rgb: 20, 184, 166;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #119f8f;
+  --ion-color-secondary-tint: #2cc0af;
+
+  /* terciario: coral suave */
+  --ion-color-tertiary: #fb7185;
+  --ion-color-tertiary-rgb: 251, 113, 133;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #dd6373;
+  --ion-color-tertiary-tint: #fb7f90;
+
+  /* success / warning / danger los dejamos casi ionic */
+  --ion-color-success: #22c55e;
+  --ion-color-success-rgb: 34, 197, 94;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #1da952;
+  --ion-color-success-tint: #38cb6e;
+
+  --ion-color-warning: #f97316;
+  --ion-color-warning-rgb: 249, 115, 22;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #db6513;
+  --ion-color-warning-tint: #fa8147;
+
+  --ion-color-danger: #ef4444;
+  --ion-color-danger-rgb: 239, 68, 68;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #d33b3b;
+  --ion-color-danger-tint: #f15959;
+
+  /* neutrales */
+  --ion-color-medium: #94a3b8;
+  --ion-color-medium-rgb: 148, 163, 184;
+  --ion-color-light: #e2e8f0;
+  --ion-color-light-rgb: 226, 232, 240;
+  --ion-color-dark: #0f172a;
+  --ion-color-dark-rgb: 15, 23, 42;
+
+  /* fondo general */
+  --app-background: #f1f5f9;
+}

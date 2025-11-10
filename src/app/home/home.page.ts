@@ -17,6 +17,8 @@ import { ShoppingListService } from '../services/shopping-list';
 export class HomePage implements OnInit {
   @ViewChild('animatedMainTitle', { read: ElementRef }) animatedMainTitle!: ElementRef;
   @ViewChild('animatedMenu', { read: ElementRef }) animatedMenu!: ElementRef;
+  @ViewChild('emptyIcon', { read: ElementRef }) emptyIcon!: ElementRef;
+  @ViewChild('emptyText', { read: ElementRef }) emptyText!: ElementRef;
 
   user: string = '';
   shoppingLists: ShoppingList[] = [];
@@ -57,6 +59,26 @@ export class HomePage implements OnInit {
         .duration(1500)
         .fromTo('opacity', '0', '1');
       menuAnimation.play();
+    }
+
+    if (this.emptyIcon && this.emptyText) {      
+      const iconAnimation = this.animationCtrl.create()
+        .addElement(this.emptyIcon.nativeElement)
+        .duration(1000)
+        .keyframes([
+          { offset: 0, transform: 'scale(1) rotate(0deg)' },
+          { offset: 0.3, transform: 'scale(1.2) rotate(10deg)' },
+          { offset: 0.6, transform: 'scale(1.2) rotate(-10deg)' },
+          { offset: 1, transform: 'scale(1) rotate(0deg)' }
+        ]);
+        
+      const textAnimation = this.animationCtrl.create()
+        .addElement(this.emptyText.nativeElement)
+        .duration(1000)
+        .fromTo('opacity', '0', '1');
+
+      iconAnimation.play();
+      textAnimation.play();
     }
   }
 

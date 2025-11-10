@@ -8,8 +8,8 @@
   <h3>Mis Listas</h3>
   <div *ngIf="shoppingLists.length === 0; else hasLists">
     <div class="ion-text-center ion-padding-top">
-      <ion-icon name="cart-outline" size="large" color="medium"></ion-icon>
-      <p>Aún no tienes listas de compras.</p>
+      <ion-icon #emptyIcon name="cart-outline" size="large" color="medium"></ion-icon>
+      <p #emptyText>Aún no tienes listas de compras.</p>
       
       <ion-button (click)="createNewList()">
         <ion-icon slot="start" name="add-outline"></ion-icon>
@@ -24,5 +24,10 @@
         <ion-label>{{ lista.id }}</ion-label>
       </ion-item>
     </ion-list>
-    </ng-template>
+  </ng-template>
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="createNewList()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
