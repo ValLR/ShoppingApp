@@ -1,11 +1,19 @@
 ion-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  --background: var(--app-background);
 }
 
-form {
-  width: min(380px, 100%);
+.login-wrapper {
+  min-height: calc(100vh - 56px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
   background: #ffffff;
   padding: 1.8rem 1.5rem 1.5rem;
   border-radius: 1.25rem;
@@ -13,6 +21,29 @@ form {
   border: 1px solid rgba(148, 163, 184, 0.12);
 }
 
-ion-button {
+.login-card ion-input {
+  --background: #ffffff;
+  --border-radius: 0.9rem;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  margin-bottom: 1rem;
+}
+
+.login-card ion-button {
   margin-top: 0.5rem;
+  --border-radius: 1rem;
+}
+
+.register-link {
+  margin-top: 1.25rem;
+  color: var(--ion-color-primary);
+}
+
+@media (min-width: 1024px) {
+  .login-wrapper {
+    padding-top: 0;
+  }
+  .login-card {
+    max-width: 420px;
+  }
 }

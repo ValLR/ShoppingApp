@@ -5,7 +5,7 @@ import { IonicModule, AlertController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { ShoppingListService } from '../services/shopping-list';
-import { ShoppingItem, ShoppingList } from '../models/shopping.models';
+import { ShoppingList } from '../models/shopping.models';
 
 @Component({
   selector: 'app-list-view',
@@ -52,16 +52,11 @@ export class ListViewPage implements OnInit {
 
   deleteItem(index: number) {
     this.list.items.splice(index, 1);
-    this.saveList();
+    this.autoSave();
   }
 
   onCheckboxChange() {
-    this.saveList();
-  }
-
-  async saveList() {
-    this.shoppingListService.savelist(this.list);
-    this.presentSaveAlert();
+    this.autoSave();
   }
 
   async onSaveClick() {
