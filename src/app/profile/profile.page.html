@@ -10,12 +10,18 @@
 <ion-content class="ion-padding">
 
   <div class="profile-card">
-    <div class="avatar">
-      {{ user ? (user[0] | uppercase) : 'U' }}
+    <div class="avatar" (click)="takePicture()">
+      <img *ngIf="profileImage" [src]="profileImage" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+      <span *ngIf="!profileImage">{{ user ? (user[0] | uppercase) : 'U' }}</span>
+      
+      <div class="camera-icon">
+        <ion-icon name="camera"></ion-icon>
+      </div>
     </div>
+    
     <div>
       <h2 class="name">{{ user || 'Usuario' }}</h2>
-      <p class="muted">Miembro de Listify</p>
+      <p class="muted">Toca el avatar para cambiar foto</p>
     </div>
   </div>
 

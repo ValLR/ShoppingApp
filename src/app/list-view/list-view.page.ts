@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { ShoppingListService } from '../services/shopping-list';
 import { ShoppingList } from '../models/shopping.models';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-list-view',
@@ -32,17 +33,50 @@ export class ListViewPage implements OnInit {
     
     if (this.listId) {
       this.loadFromBackup(this.listId);
-      
+
       this.shoppingListService.getList(this.listId).subscribe({
-        next: (data) => {
-          this.list = data;
+        next: (dataApi) => {
+          this.list = this.mergeDataWithLocalImages(dataApi);
+          
           this.updateLocalBackup(); 
         },
         error: () => {
-          console.log("Sin conexión: Manteniendo datos locales");
           this.presentToast('Sin conexión: Usando copia local');
         }
       });
+    }
+  }
+
+  mergeDataWithLocalImages(apiList: ShoppingList): ShoppingList {
+    const backup = localStorage.getItem('backup_lists');
+    if (backup) {
+      const allLists: ShoppingList[] = JSON.parse(backup);
+      const localList = allLists.find(l => l.id === apiList.id);
+      
+      if (localList && localList.items) {
+        apiList.items.forEach((apiItem, index) => {
+          if (localList.items[index] && localList.items[index].image) {
+            apiItem.image = localList.items[index].image;
+          }
+        });
+      }
+    }
+    return apiList;
+  }
+
+  async addPhotoToItem(item: any) {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 30,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Prompt
+      });
+
+      item.image = image.dataUrl;      
+      this.autoSave();
+    } catch (error) {
+      console.log('No se tomó foto');
     }
   }
 
@@ -50,7 +84,6 @@ export class ListViewPage implements OnInit {
     const backup = localStorage.getItem('backup_lists');
     if (backup) {
       const allLists: ShoppingList[] = JSON.parse(backup);
-
       const foundList = allLists.find(l => l.id === id);
       if (foundList) {
         this.list = foundList;
@@ -65,7 +98,9 @@ export class ListViewPage implements OnInit {
 
   addItem() {
     if (this.newItem.trim().length > 0) {
-      if (!this.list.items) { this.list.items = []; }
+      if (!this.list.items) {
+        this.list.items = [];
+      }
       
       this.list.items.push({
         name: this.newItem,
@@ -80,26 +115,26 @@ export class ListViewPage implements OnInit {
     this.updateLocalBackup();
 
     if (this.listId && this.list) {
-      this.shoppingListService.updateList(this.listId, this.list).subscribe({
-        next: () => console.log('Sincronizada con API'),
-        error: () => {
-            console.log('Error API, guardando localmente');
-            this.updateLocalBackup();
-        }
+      const listaParaNube = JSON.parse(JSON.stringify(this.list));
+      listaParaNube.items.forEach((i: any) => delete i.image);
+
+      this.shoppingListService.updateList(this.listId, listaParaNube).subscribe({
+        next: () => console.log('Texto sincronizado con API (Sin fotos)'),
+        error: (err) => console.log('Error API (Posiblemente 413)', err)
       });
     }
   }
 
   updateLocalBackup() {
-      const backup = localStorage.getItem('backup_lists');
-      if (backup) {
-          let allLists: ShoppingList[] = JSON.parse(backup);
-          const index = allLists.findIndex(l => l.id === this.listId);
-          if (index > -1) {
-              allLists[index] = this.list;
-              localStorage.setItem('backup_lists', JSON.stringify(allLists));
-          }
+    const backup = localStorage.getItem('backup_lists');
+    if (backup) {
+      let allLists: ShoppingList[] = JSON.parse(backup);
+      const index = allLists.findIndex(l => l.id === this.listId);
+      if (index > -1) {
+        allLists[index] = this.list;
+        localStorage.setItem('backup_lists', JSON.stringify(allLists));
       }
+    }
   }
 
   deleteItem(index: number) {
@@ -113,6 +148,11 @@ export class ListViewPage implements OnInit {
 
   async onSaveClick() {
     this.autoSave();
+    const alert = await this.alertCtrl.create({
+      header: 'Guardado ;)',
+      message: 'Lista guardada correctamente.',
+      buttons: ['OK']
+    });
     this.presentSaveAlert();
   }
 

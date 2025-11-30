@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { RouterModule, Router } from '@angular/router';
 import { ShoppingListService } from '../services/shopping-list';
-import { ShoppingList } from '../models/shopping.models';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-profile',
@@ -20,6 +20,7 @@ export class ProfilePage implements OnInit {
   totalLists = 0;
   lastListId = '—';
   totalItems = 0;
+  profileImage: string | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,21 +35,39 @@ export class ProfilePage implements OnInit {
       }
     });
 
+    const savedPhoto = localStorage.getItem('profile_photo');
+    if (savedPhoto) {
+      this.profileImage = savedPhoto;
+    }
+
     this.shoppingListService.getLists().subscribe(lists => {
       this.totalLists = lists.length;
-
       if (lists.length > 0) {
         const last: any = lists[lists.length - 1]; 
         this.lastListId = last.name || 'Lista #' + last.id;
-        
-        this.totalItems = lists.reduce((acc: number, list: any) => {
-          return acc + (list.items ? list.items.length : 0);
-        }, 0);
-      } else {
-        this.lastListId = 'No hay listas';
-        this.totalItems = 0;
+        this.totalItems = lists.reduce((acc: number, list: any) => acc + (list.items ? list.items.length : 0), 0);
       }
     });
+  }
+
+async takePicture() {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Prompt
+      });
+
+      this.profileImage = image.dataUrl;
+      
+      if (this.profileImage) {
+        localStorage.setItem('profile_photo', this.profileImage);
+      }
+      
+    } catch (error) {
+      console.log('El usuario canceló o hubo error', error);
+    }
   }
 
   logout() {

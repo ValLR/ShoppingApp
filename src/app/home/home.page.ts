@@ -48,19 +48,36 @@ export class HomePage implements OnInit {
     this.shoppingListService.getLists().subscribe({
       next: (res) => {
         console.log("Listas cargadas desde API");
-        this.shoppingLists = res;
-        localStorage.setItem('backup_lists', JSON.stringify(res));
+        const listsWithPhotos = this.preserveLocalPhotos(res);
+        this.shoppingLists = listsWithPhotos;
+        localStorage.setItem('backup_lists', JSON.stringify(this.shoppingLists));
       },
-      error: (err) => {
-        console.error("Error de API, usando datos Offline", err);
+      error: () => {
         const backup = localStorage.getItem('backup_lists');
-        if (backup) {
-          this.shoppingLists = JSON.parse(backup);
-          this.presentToast('Modo Offline: Usando datos guardados');
-        } else {
-          this.presentToast('Error de conexión y sin datos guardados');
-        }
+        if (backup) { this.shoppingLists = JSON.parse(backup); }
       }
+    });
+  }
+
+  preserveLocalPhotos(apiLists: ShoppingList[]): ShoppingList[] {
+    const backup = localStorage.getItem('backup_lists');
+    if (!backup) return apiLists;
+
+    const localLists: ShoppingList[] = JSON.parse(backup);
+
+    return apiLists.map(apiList => {
+      const localList = localLists.find(l => l.id === apiList.id);
+      
+      if (localList && localList.items) {
+        apiList.items = apiList.items.map((apiItem, index) => {
+          const localItem = localList.items[index];
+          if (localItem && localItem.image) {
+            apiItem.image = localItem.image;
+          }
+          return apiItem;
+        });
+      }
+      return apiList;
     });
   }
 
@@ -91,11 +108,9 @@ export class HomePage implements OnInit {
     };
 
     this.shoppingListService.createList(newList).subscribe(res => {
-      console.log("Lista creada en API con ID: ", res.id);
-    
       this.shoppingLists.push(res);
-      localStorage.setItem('backup_lists', JSON.stringify(this.shoppingLists));
-
+      this.updateLocalBackup();
+      
       this.goToList(res.id); 
       this.presentToast('Lista creada exitosamente');
     });
@@ -113,6 +128,10 @@ export class HomePage implements OnInit {
         this.presentToast('No se puede borrar offline');
       }
     });
+  }
+
+  updateLocalBackup() {
+    localStorage.setItem('backup_lists', JSON.stringify(this.shoppingLists));
   }
 
   goToList(listId: string) {
