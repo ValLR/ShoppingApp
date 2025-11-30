@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule, AnimationController, AlertController } from '@ionic/angular';
+import { IonicModule, AnimationController, AlertController, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ShoppingList } from '../models/shopping.models';
 import { ShoppingListService } from '../services/shopping-list';
@@ -29,6 +29,7 @@ export class HomePage implements OnInit {
     private animationCtrl: AnimationController,
     private shoppingListService : ShoppingListService,
     private alertCtrl: AlertController,
+    private toastCtrl: ToastController,
   ) {}
 
   ngOnInit() {
@@ -40,7 +41,86 @@ export class HomePage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.shoppingLists = this.shoppingListService.getLists();
+    this.loadLists();
+  }
+
+  loadLists() {
+    this.shoppingListService.getLists().subscribe(res => {
+      console.log("Listas cargadas:", res);
+      this.shoppingLists = res;
+    });
+  }
+
+  async createNewList() {
+    const alert = await this.alertCtrl.create({
+      header: 'Nueva Lista',
+      inputs: [
+        {
+          name: 'nombre',
+          type: 'text',
+          placeholder: 'Ej: Compra Mensual'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Crear',
+          handler: (data) => {
+            if (data.nombre && data.nombre.trim().length > 0) {
+              this.addListToApi(data.nombre.trim());
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  addListToApi(name: string) {
+    const capitalizedName = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+    const newList = {
+      name: capitalizedName,
+      items: []
+    };
+
+    this.shoppingListService.createList(newList).subscribe(res => {
+      console.log("Lista creada en API con ID: ", res.id);
+      
+      this.shoppingLists.push(res);      
+      this.goToList(res.id); 
+      this.presentToast('Lista creada exitosamente');
+    });
+  }
+
+  deleteList(index: number) {
+    const list = this.shoppingLists[index];
+    this.shoppingListService.deleteList(list.id).subscribe(() => {
+      this.shoppingLists.splice(index, 1);
+      this.presentToast('Lista eliminada');
+    });
+  }
+
+  goToList(listId: string) {
+    this.router.navigate(['/list-view', listId]);
+  }
+
+  goToProfile() {
+    this.router.navigate(['/profile'], {
+      queryParams: { user: this.user }
+    });
+  }
+
+  async presentToast(message: string) {
+    const toast = await this.toastCtrl.create({
+      message: message,
+      duration: 2000,
+      color: 'dark'
+    });
+    toast.present();
   }
 
   ionViewDidEnter() {
@@ -80,46 +160,5 @@ export class HomePage implements OnInit {
       iconAnimation.play();
       textAnimation.play();
     }
-  }
-
-  goToList(listId: string) {
-    this.router.navigate(['/list-view'], {
-      queryParams: { 'id': listId }
-    });
-  }
-
-  goToProfile() {
-    this.router.navigate(['/profile'], {
-      queryParams: { user: this.user }
-    });
-  }
-
-  async createNewList() {
-    const alert = await this.alertCtrl.create({
-      header: 'Nueva Lista',
-      inputs: [
-        {
-          name: 'nombre',
-          type: 'text',
-          placeholder: 'Ej: Compra Mensual'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Crear',
-          handler: (data) => {
-            if (data.nombre && data.nombre.trim().length > 0) {
-              this.goToList(data.nombre.trim());
-            }
-          }
-        }
-      ]
-    });
-
-    await alert.present();
   }
 }

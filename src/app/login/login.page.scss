@@ -8,35 +8,41 @@ ion-content {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1.5rem;
+  padding: 3rem 1.5rem 1.5rem 1.5rem;
 }
 
 .login-card {
   width: 100%;
   max-width: 420px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
   padding: 1.8rem 1.5rem 1.5rem;
   border-radius: 1.25rem;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .login-card ion-input {
-  --background: #ffffff;
+  --background: #f1f5f9;
   --border-radius: 0.9rem;
   --padding-start: 1rem;
   --padding-end: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.8rem;
+  --color: var(--ion-color-primary);
 }
 
 .login-card ion-button {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   --border-radius: 1rem;
+  --background: var(--ion-color-secondary);
+  font-weight: 600;
+  --box-shadow: 0 4px 10px rgba(232, 93, 4, 0.3);
 }
 
 .register-link {
   margin-top: 1.25rem;
-  color: var(--ion-color-primary);
+  color: var(--ion-color-light);
+  font-weight: 500;
+  text-decoration: none;
 }
 
 @media (min-width: 1024px) {

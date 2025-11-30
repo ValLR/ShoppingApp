@@ -16,8 +16,8 @@ import { ShoppingList } from '../models/shopping.models';
 })
 export class ListViewPage implements OnInit {
 
-  list!: ShoppingList;
-  listId: string = '';
+  list: ShoppingList = { id: '', name: '', items: [] };
+  listId: string | null = '';
   newItem: string = '';
 
   constructor(
@@ -27,16 +27,19 @@ export class ListViewPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      if (params['id']) {
-        this.listId = params['id'];
-        this.list = this.shoppingListService.getList(this.listId);
-      }
-    })
+    this.listId = this.route.snapshot.paramMap.get('id');
+    
+    if (this.listId) {
+      this.shoppingListService.getList(this.listId).subscribe(data => {
+        this.list = data;
+      });
+    }
   }
 
   addItem() {
     if (this.newItem.trim().length > 0) {
+      if (!this.list.items) { this.list.items = []; }
+      
       this.list.items.push({
         name: this.newItem,
         checked: false
@@ -47,7 +50,11 @@ export class ListViewPage implements OnInit {
   }
 
   autoSave() {
-    this.shoppingListService.savelist(this.list);
+    if (this.listId && this.list) {
+      this.shoppingListService.updateList(this.listId, this.list).subscribe(() => {
+        console.log('Persistido en API');
+      });
+    }
   }
 
   deleteItem(index: number) {
@@ -67,7 +74,7 @@ export class ListViewPage implements OnInit {
   async presentSaveAlert() {
     const alert = await this.alertCtrl.create({
       header: 'Guardado ;)',
-      message: 'Tu lista "' + this.list.id + '" ha sido guardada.',
+      message: 'Tu lista "' + this.list.name + '" ha sido guardada.',
       buttons: ['OK']
     });
 

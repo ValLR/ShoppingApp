@@ -1,5 +1,5 @@
-<ion-header>
-  <ion-toolbar>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
     <ion-title #animatedMainTitle>¡Hola, {{ user }}!</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="goToProfile()">
@@ -10,29 +10,41 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  
   <h3>Mis Listas</h3>
+
+  <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+    <img width="150" class="icon-round" src="../../assets/Think.png" alt="Thinking">
+  </div>
+
   <div *ngIf="shoppingLists.length === 0; else hasLists">
-    <div class="ion-text-center ion-padding-top">
+    <div class="ion-text-center ion-padding-top empty-state-card">
       <ion-icon #emptyIcon name="cart-outline" size="large" color="medium"></ion-icon>
       <p #emptyText>Aún no tienes listas de compras.</p>
       
-      <ion-button (click)="createNewList()">
+      <ion-button (click)="createNewList()" color="secondary" shape="round">
         <ion-icon slot="start" name="add-outline"></ion-icon>
         Crear una lista
       </ion-button>
     </div>
-    </div>
+  </div>
 
   <ng-template #hasLists>
     <ion-list #animatedMenu>
-      <ion-item button *ngFor="let lista of shoppingLists" (click)="goToList(lista.id)">
-        <ion-label>{{ lista.id }}</ion-label>
+      <ion-item button lines="none" *ngFor="let lista of shoppingLists" (click)="goToList(lista.id)" class="list-item">
+        <ion-label>
+          <h2>{{ lista.name }}</h2>
+          <p>Toca para ver detalles</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" color="tertiary"></ion-icon>
       </ion-item>
     </ion-list>
   </ng-template>
+
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="createNewList()">
+    <ion-fab-button (click)="createNewList()" color="secondary">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+
 </ion-content>

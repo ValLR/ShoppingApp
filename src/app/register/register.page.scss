@@ -1,0 +1,91 @@
+ion-content {
+  --background: var(--app-background);
+}
+
+.register-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  padding: 1rem;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+ion-input, ion-select, ion-datetime-button {
+  --background: #f8fafc;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.9rem;
+  --border-radius: 0.9rem;
+}
+
+ion-select::part(container) {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+ion-item {
+  --background: transparent;
+  --border-style: none;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  margin-bottom: 1rem;
+}
+
+ion-button {
+  margin-top: 1.5rem;
+  --border-radius: 1rem;
+  font-weight: 600;
+  height: 50px;
+  --box-shadow: 0 4px 10px rgba(232, 93, 4, 0.3);
+}
+
+ion-modal.datetime-modal {
+  --width: 90%;
+  --max-width: 350px;
+  --height: auto;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  align-items: center;
+  justify-content: center;
+}
+
+ion-datetime {
+  border-radius: 16px;
+  margin: 0 auto;  
+  --background: #ffffff;
+}
+
+.datetime-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  background: #fff;
+}
+
+ion-select::part(label) {
+  background-color: #f8fafc;
+  padding: 0 4px;
+  margin-left: -4px;
+}
+
+ion-select::part(text) {
+  margin-top: -1px;
+  line-height: 1.1;
+}
+

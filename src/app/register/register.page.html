@@ -1,15 +1,110 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Registrate</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/login"></ion-back-button>
+      <ion-back-button defaultHref="/login" text="Volver"></ion-back-button>
     </ion-buttons>
+    <ion-title>Crear Cuenta</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-input label="Usuario" label-placement="floating"></ion-input>
-  <ion-input label="Clave" label-placement="floating" type="password"></ion-input>
-  <ion-input label="Confirmar Clave" label-placement="floating" type="password"></ion-input>
-  <ion-button expand="block" (click)="register()">Crear Cuenta</ion-button>
+<ion-content>
+  <div class="register-wrapper">
+    
+    <div class="register-card">
+      
+      <form [formGroup]="registroForm">
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+          <img width="200" class="icon-round" src="../../assets/listifyIcon.png" alt="icon">
+        </div>
+        
+        <ion-input 
+          label="Usuario" 
+          label-placement="floating" 
+          fill="outline" 
+          mode="md"
+          formControlName="usuario">
+        </ion-input>
+        
+        <ion-input 
+          label="Clave" 
+          label-placement="floating" 
+          fill="outline" 
+          mode="md"
+          type="password" 
+          formControlName="password">
+        </ion-input>
+        
+        <ion-input 
+          label="Confirmar Clave" 
+          label-placement="floating" 
+          fill="outline" 
+          mode="md"
+          type="password" 
+          formControlName="confirmPassword">
+        </ion-input>
+
+        <ion-select
+          label="Región"
+          class="region-select"
+          label-placement="floating"
+          fill="outline"
+          mode="md"
+          formControlName="region"
+          interface="popover"
+          cancelText="Cancelar"
+          okText="Aceptar">
+            <ion-select-option value="arica_parinacota">Arica y Parinacota</ion-select-option>
+            <ion-select-option value="tarapaca">Tarapacá</ion-select-option>
+            <ion-select-option value="antofagasta">Antofagasta</ion-select-option>
+            <ion-select-option value="atacama">Atacama</ion-select-option>
+            <ion-select-option value="coquimbo">Coquimbo</ion-select-option>
+            <ion-select-option value="valparaiso">Valparaíso</ion-select-option>
+            <ion-select-option value="metropolitana">Región Metropolitana</ion-select-option>
+            <ion-select-option value="ohiggins">O'Higgins</ion-select-option>
+            <ion-select-option value="maule">Maule</ion-select-option>
+            <ion-select-option value="nuble">Ñuble</ion-select-option>
+            <ion-select-option value="biobio">Biobío</ion-select-option>
+            <ion-select-option value="araucania">La Araucanía</ion-select-option>
+            <ion-select-option value="los_rios">Los Ríos</ion-select-option>
+            <ion-select-option value="los_lagos">Los Lagos</ion-select-option>
+            <ion-select-option value="aysen">Aysén</ion-select-option>
+            <ion-select-option value="magallanes">Magallanes</ion-select-option>
+        </ion-select>
+
+          <ion-input
+            id="open-date-modal"
+            label="Fecha de Nacimiento"
+            label-placement="floating"
+            fill="outline"
+            mode="md"
+            readonly="true"
+            [value]="registroForm.get('fechaNacimiento')?.value | date: 'dd/MM/yyyy'">
+            <ion-icon slot="end" name="calendar-outline" color="primary" style="margin-right: 10px;"></ion-icon>
+          </ion-input>
+          <ion-modal trigger="open-date-modal" class="datetime-modal">
+            <ng-template>
+              <div class="datetime-container">
+                <ion-datetime
+                  presentation="date"
+                  formControlName="fechaNacimiento"
+                  [showDefaultButtons]="true"
+                  doneText="Confirmar"
+                  cancelText="Cancelar">
+                </ion-datetime>
+              </div>
+            </ng-template>
+          </ion-modal>
+
+        <ion-button 
+          expand="block" 
+          color="secondary" 
+          (click)="register()"
+          [disabled]="!registroForm.valid">
+          REGISTRARME
+        </ion-button>
+
+      </form>
+
+    </div>
+  </div>
 </ion-content>

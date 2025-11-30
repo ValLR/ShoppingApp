@@ -1,0 +1,42 @@
+ion-content {
+  --background: var(--app-background);
+}
+
+.error-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  color: #ffffff;
+}
+
+.error-icon {
+  font-size: 8rem;
+  color: var(--ion-color-secondary);
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  margin-bottom: 3rem;
+  line-height: 1.5;
+}
+
+ion-button {
+  width: 100%;
+  max-width: 250px;
+  font-weight: 700;
+  --box-shadow: 0 4px 15px rgba(232, 93, 4, 0.4);
+}

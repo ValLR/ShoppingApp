@@ -1,33 +1,34 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { ShoppingList, ShoppingItem } from '../models/shopping.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingListService {
-  private shoppingLists: ShoppingList[] = [];
+  
+  private apiURL = 'https://692c7d16c829d464006fb59f.mockapi.io/api/v1/lists';
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  getLists(): ShoppingList[] {
-    return this.shoppingLists;
+  getLists(): Observable<ShoppingList[]> {
+    return this.http.get<ShoppingList[]>(this.apiURL);
   }
 
-  getList(id: string): ShoppingList {
-    let list = this.shoppingLists.find(l => l.id === id);
-
-    if (!list) {
-      list = { id: id, items: [] };
-      this.shoppingLists.push(list);
-    }
-    
-    return list;
+  getList(id: string): Observable<ShoppingList> {
+    return this.http.get<ShoppingList>(`${this.apiURL}/${id}`);
   }
 
-  savelist(list: ShoppingList) {
-    const index = this.shoppingLists.findIndex(l => l.id === list.id);
-    if (index > -1) {
-      this.shoppingLists[index] = list;
-    }
+  createList(list: any): Observable<ShoppingList> {
+    return this.http.post<ShoppingList>(this.apiURL, list);
+  }
+
+  updateList(id: string, list: any): Observable<ShoppingList> {
+    return this.http.put<ShoppingList>(`${this.apiURL}/${id}`, list);
+  }
+
+  deleteList(id: string): Observable<any> {
+    return this.http.delete(`${this.apiURL}/${id}`);
   }
 }

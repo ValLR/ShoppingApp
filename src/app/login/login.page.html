@@ -1,12 +1,9 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
   <div class="login-wrapper">
     <form #loginForm="ngForm" (ngSubmit)="login(loginForm)" class="login-card">
+      <div style="margin-bottom: 30px;">
+        <img style="border-radius: 10%;" src="../../assets/listifyFont.png" alt="icon">
+      </div>
       <ion-input
         label="Usuario"
         label-placement="floating"

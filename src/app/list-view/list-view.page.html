@@ -1,53 +1,58 @@
-<ion-header>
-  <ion-toolbar>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-back-button defaultHref="/home" text="Volver"></ion-back-button>
     </ion-buttons>
     
-    <ion-title>{{ list.id }}</ion-title> 
+    <ion-title>{{ list.name }}</ion-title> 
     
     <ion-buttons slot="end">
-      <ion-button (click)="onSaveClick()">Guardar</ion-button>
+      <ion-button (click)="onSaveClick()" color="secondary" fill="solid" shape="round" style="margin-right: 10px;">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        Guardar
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 
-  <ion-toolbar>
-    <ion-item>
+  <ion-toolbar class="input-toolbar">
+    <ion-item lines="none" class="input-item">
       <ion-input
         label="Nuevo ítem"
         label-placement="floating"
         [(ngModel)]="newItem"
         (keyup.enter)="addItem()"
-        placeholder="Escribe y presiona Enter..."
+        placeholder="Ej: Leche, Pan..."
       ></ion-input>
-      <ion-button slot="end" (click)="addItem()" [disabled]="newItem.trim().length === 0">
-        <ion-icon name="add" slot="icon-only"></ion-icon>
+      
+      <ion-button slot="end" (click)="addItem()" [disabled]="newItem.trim().length === 0" fill="clear" color="primary">
+        <ion-icon name="add-circle" slot="icon-only" size="large"></ion-icon>
       </ion-button>
     </ion-item>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-list *ngIf="list">
+<ion-content class="ion-padding">
+  
+  <ion-list *ngIf="list" class="items-list">
     
-    <ion-item *ngIf="list.items.length === 0" lines="none">
-      <ion-label class="ion-text-center" color="medium">
-        Añade items a tu lista...
-      </ion-label>
-    </ion-item>
+    <div *ngIf="list.items.length === 0" class="empty-list-msg">
+      <ion-icon name="basket-outline" size="large"></ion-icon>
+      <p>Tu lista está vacía ¡Agrega ítems!</p>
+    </div>
     
-    <ion-item *ngFor="let item of list.items; let i = index">
-      
-      <ion-checkbox slot="start" [(ngModel)]="item.checked" (ionChange)="onCheckboxChange()"></ion-checkbox>
-      
-      <ion-label [class.strikethrough]="item.checked">
-        {{ item.name }}
-      </ion-label>
-      
-      <ion-button slot="end" color="danger" fill="clear" (click)="deleteItem(i)">
-        <ion-icon name="trash" slot="icon-only"></ion-icon>
-      </ion-button>
-      
-    </ion-item>
+    <ion-item-sliding *ngFor="let item of list.items; let i = index" class="item-card">
+      <ion-item lines="none">
+        <ion-checkbox slot="start" [(ngModel)]="item.checked" (ionChange)="onCheckboxChange()" mode="md"></ion-checkbox>
+        
+        <ion-label [class.strikethrough]="item.checked">
+          {{ item.name }}
+        </ion-label>
+        
+        <ion-button slot="end" color="danger" fill="clear" (click)="deleteItem(i)">
+          <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-item-sliding>
   </ion-list>
+
 </ion-content>

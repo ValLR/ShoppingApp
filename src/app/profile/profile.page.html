@@ -1,9 +1,9 @@
-<ion-header>
-  <ion-toolbar>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
+      <ion-back-button defaultHref="/home" text="Volver"></ion-back-button>
     </ion-buttons>
-    <ion-title>Mi perfil</ion-title>
+    <ion-title>Mi Perfil</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -15,45 +15,42 @@
     </div>
     <div>
       <h2 class="name">{{ user || 'Usuario' }}</h2>
-      <p class="muted">Cuenta de ShoppingList</p>
+      <p class="muted">Miembro de Listify</p>
     </div>
   </div>
 
   <ion-list inset>
-    <ion-list-header>Resumen de uso</ion-list-header>
+    <ion-list-header>Tu Actividad</ion-list-header>
     <ion-item>
       <ion-label>Listas creadas</ion-label>
-      <ion-note slot="end">{{ totalLists }}</ion-note>
+      <ion-note slot="end" color="primary">{{ totalLists }}</ion-note>
     </ion-item>
     <ion-item>
       <ion-label>Última lista</ion-label>
       <ion-note slot="end">{{ lastListId }}</ion-note>
     </ion-item>
     <ion-item>
-      <ion-label>Ítems totales</ion-label>
+      <ion-label>Productos guardados</ion-label>
       <ion-note slot="end">{{ totalItems }}</ion-note>
     </ion-item>
   </ion-list>
 
   <ion-list inset>
-    <ion-list-header>Preferencias</ion-list-header>
-    <ion-item>
-      <ion-label>Tema oscuro</ion-label>
-      <ion-toggle slot="end" disabled></ion-toggle>
-    </ion-item>
-    <ion-item>
+    <ion-list-header>Configuración</ion-list-header>
+    <ion-item lines="none">
       <ion-label>Idioma</ion-label>
       <ion-note slot="end">Español</ion-note>
     </ion-item>
   </ion-list>
+
   <div class="logout-button-container">
-    <ion-button (click)="logout()">
+    <ion-button (click)="logout()" color="danger" fill="outline" shape="round">
+      <ion-icon name="log-out-outline" slot="start"></ion-icon>
       Cerrar sesión
     </ion-button>
   </div>
-  <div class="about-box">
-    <p class="muted">Versión 0.1.0</p>
-    <p class="muted">Demo Ionic + Angular</p>
-  </div>
 
+  <div class="about-box">
+    <p class="muted">Listify v1.0</p>
+  </div>
 </ion-content>

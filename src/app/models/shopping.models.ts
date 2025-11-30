@@ -5,5 +5,6 @@ export interface ShoppingItem {
 
 export interface ShoppingList {
   id: string;
+  name: string;
   items: ShoppingItem[];
 }

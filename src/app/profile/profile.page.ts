@@ -34,17 +34,21 @@ export class ProfilePage implements OnInit {
       }
     });
 
-    const lists: ShoppingList[] = this.shoppingListService.getLists();
-    this.totalLists = lists.length;
+    this.shoppingListService.getLists().subscribe(lists => {
+      this.totalLists = lists.length;
 
-    if (lists.length > 0) {
-      const last = lists[lists.length - 1];
-      this.lastListId = last.id;
-      this.totalItems = lists.reduce((acc, list) => acc + list.items.length, 0);
-    } else {
-      this.lastListId = 'No hay listas';
-      this.totalItems = 0;
-    }
+      if (lists.length > 0) {
+        const last: any = lists[lists.length - 1]; 
+        this.lastListId = last.name || 'Lista #' + last.id;
+        
+        this.totalItems = lists.reduce((acc: number, list: any) => {
+          return acc + (list.items ? list.items.length : 0);
+        }, 0);
+      } else {
+        this.lastListId = 'No hay listas';
+        this.totalItems = 0;
+      }
+    });
   }
 
   logout() {
