@@ -24,7 +24,6 @@ export class HomePage implements OnInit {
   shoppingLists: ShoppingList[] = [];
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
     private animationCtrl: AnimationController,
     private shoppingListService : ShoppingListService,
@@ -33,11 +32,8 @@ export class HomePage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      if (params['user']) {
-        this.user = params['user'];
-      }
-    });
+    const storedUser = localStorage.getItem('usuario');
+    this.user = storedUser ? storedUser : '';
   }
 
   ionViewWillEnter() {
@@ -138,9 +134,7 @@ export class HomePage implements OnInit {
   }
 
   goToProfile() {
-    this.router.navigate(['/profile'], {
-      queryParams: { user: this.user }
-    });
+    this.router.navigate(['/profile']);
   }
 
   async presentToast(message: string) {

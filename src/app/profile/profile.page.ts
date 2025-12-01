@@ -23,17 +23,13 @@ export class ProfilePage implements OnInit {
   profileImage: string | undefined;
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
     private shoppingListService: ShoppingListService
   ) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      if (params['user']) {
-        this.user = params['user'];
-      }
-    });
+    const storedUser = localStorage.getItem('usuario');
+    this.user = storedUser ? storedUser : '';
 
     const savedPhoto = localStorage.getItem('profile_photo');
     if (savedPhoto) {
@@ -42,10 +38,15 @@ export class ProfilePage implements OnInit {
 
     this.shoppingListService.getLists().subscribe(lists => {
       this.totalLists = lists.length;
+
       if (lists.length > 0) {
-        const last: any = lists[lists.length - 1]; 
+        const last: any = lists[lists.length - 1];
         this.lastListId = last.name || 'Lista #' + last.id;
-        this.totalItems = lists.reduce((acc: number, list: any) => acc + (list.items ? list.items.length : 0), 0);
+
+        this.totalItems = lists.reduce(
+          (acc: number, list: any) => acc + (list.items ? list.items.length : 0),
+          0
+        );
       }
     });
   }
@@ -71,6 +72,8 @@ async takePicture() {
   }
 
   logout() {
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('backup_lists');
     this.router.navigate(['/login']);
   }
 }

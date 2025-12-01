@@ -25,11 +25,6 @@ export class LoginPage implements OnInit {
     const username = form.value.username;
     localStorage.setItem('usuario', username);
 
-    const navigationExtras: NavigationExtras = {
-      queryParams: {
-        user: username
-      }
-    };
-    this.router.navigate(['/home'], navigationExtras);
+    this.router.navigate(['/home']);
   }
 }
