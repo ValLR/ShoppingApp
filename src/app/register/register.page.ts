@@ -29,13 +29,18 @@ export class RegisterPage implements OnInit {
   }
 
   register() {
-    if (this.registroForm.valid) {
-      console.log('Datos válidos:', this.registroForm.value);
-      this.router.navigate(['/login']);
-    } else {
+    if (this.registroForm.invalid) {
       this.registroForm.markAllAsTouched();
-      alert('Por favor completa todos los campos requeridos');
+      return alert('Por favor completa todos los campos requeridos');
     }
-  }
 
+    const { password, confirmPassword } = this.registroForm.value;
+
+    if (password !== confirmPassword) {
+      return alert('Las contraseñas no coinciden');
+    }
+
+    console.log('Datos válidos:', this.registroForm.value);
+    this.router.navigate(['/login']);
+  }
 }
