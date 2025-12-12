@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule, AlertController, ToastController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { ShoppingListService } from '../services/shopping-list';
 import { ShoppingList } from '../models/shopping.models';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { DbserviceService } from '../services/dbservice';
 
 @Component({
   selector: 'app-list-view',
@@ -25,43 +25,25 @@ export class ListViewPage implements OnInit {
     private route: ActivatedRoute,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
-    private shoppingListService: ShoppingListService,
+    private dbService: DbserviceService,
   ) {}
 
   ngOnInit() {
     this.listId = this.route.snapshot.paramMap.get('id');
     
     if (this.listId) {
-      this.loadFromBackup(this.listId);
+      this.dbService.dbState().subscribe((isReady) => {
+        if (isReady) {
+          this.dbService.fetchShoppingLists().subscribe((lists) => {
+            const found = lists.find(l => l.id === this.listId);
 
-      this.shoppingListService.getList(this.listId).subscribe({
-        next: (dataApi) => {
-          this.list = this.mergeDataWithLocalImages(dataApi);
-          
-          this.updateLocalBackup(); 
-        },
-        error: () => {
-          this.presentToast('Sin conexión: Usando copia local');
+            if (found) {
+              this.list = found;
+            }
+          });
         }
       });
     }
-  }
-
-  mergeDataWithLocalImages(apiList: ShoppingList): ShoppingList {
-    const backup = localStorage.getItem('backup_lists');
-    if (backup) {
-      const allLists: ShoppingList[] = JSON.parse(backup);
-      const localList = allLists.find(l => l.id === apiList.id);
-      
-      if (localList && localList.items) {
-        apiList.items.forEach((apiItem, index) => {
-          if (localList.items[index] && localList.items[index].image) {
-            apiItem.image = localList.items[index].image;
-          }
-        });
-      }
-    }
-    return apiList;
   }
 
   async addPhotoToItem(item: any) {
@@ -74,9 +56,9 @@ export class ListViewPage implements OnInit {
       });
 
       item.image = image.dataUrl;      
-      this.autoSave();
+      this.saveToDB();
     } catch (error) {
-      console.log('No se tomó foto');
+      console.log('No se tomó foto', error);
     }
   }
 
@@ -107,23 +89,23 @@ export class ListViewPage implements OnInit {
         checked: false
       });
       this.newItem = '';
-      this.autoSave();
+      this.saveToDB();
     }
   }
 
-  autoSave() {
-    this.updateLocalBackup();
+  // autoSave() {
+  //   this.updateLocalBackup();
 
-    if (this.listId && this.list) {
-      const listaParaNube = JSON.parse(JSON.stringify(this.list));
-      listaParaNube.items.forEach((i: any) => delete i.image);
+  //   if (this.listId && this.list) {
+  //     const listaParaNube = JSON.parse(JSON.stringify(this.list));
+  //     listaParaNube.items.forEach((i: any) => delete i.image);
 
-      this.shoppingListService.updateList(this.listId, listaParaNube).subscribe({
-        next: () => console.log('Texto sincronizado con API (Sin fotos)'),
-        error: (err) => console.log('Error API (Posiblemente 413)', err)
-      });
-    }
-  }
+  //     this.shoppingListService.updateList(this.listId, listaParaNube).subscribe({
+  //       next: () => console.log('Texto sincronizado con API (Sin fotos)'),
+  //       error: (err) => console.log('Error API (Posiblemente 413)', err)
+  //     });
+  //   }
+  // }
 
   updateLocalBackup() {
     const backup = localStorage.getItem('backup_lists');
@@ -139,21 +121,34 @@ export class ListViewPage implements OnInit {
 
   deleteItem(index: number) {
     this.list.items.splice(index, 1);
-    this.autoSave();
+    this.saveToDB();
   }
 
   onCheckboxChange() {
-    this.autoSave();
+    this.saveToDB();
   }
 
   async onSaveClick() {
-    this.autoSave();
+    this.saveToDB();
     const alert = await this.alertCtrl.create({
       header: 'Guardado ;)',
       message: 'Lista guardada correctamente.',
       buttons: ['OK']
     });
-    this.presentSaveAlert();
+    await alert.present();
+  }
+
+  saveToDB() {
+    if (this.listId && this.list) {
+      this.dbService.updateList(this.list.id, this.list.name, this.list.items)
+        .then(() => {
+          console.log('Sincronizado con SQLite');
+        })
+        .catch(e => {
+          console.error('Error al guardar en BBDD', e);
+          this.presentToast('Error al guardar cambios');
+        });
+    }
   }
 
   async presentSaveAlert() {

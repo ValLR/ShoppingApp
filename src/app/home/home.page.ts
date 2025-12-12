@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AnimationController, AlertController, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { ShoppingList } from '../models/shopping.models';
-import { ShoppingListService } from '../services/shopping-list';
+import { DbserviceService } from '../services/dbservice';
 
 @Component({
   selector: 'app-home',
@@ -26,7 +26,7 @@ export class HomePage implements OnInit {
   constructor(
     private router: Router,
     private animationCtrl: AnimationController,
-    private shoppingListService : ShoppingListService,
+    private dbService: DbserviceService,
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
   ) {}
@@ -34,46 +34,13 @@ export class HomePage implements OnInit {
   ngOnInit() {
     const storedUser = localStorage.getItem('usuario');
     this.user = storedUser ? storedUser : '';
-  }
 
-  ionViewWillEnter() {
-    this.loadLists();
-  }
-
-  loadLists() {
-    this.shoppingListService.getLists().subscribe({
-      next: (res) => {
-        console.log("Listas cargadas desde API");
-        const listsWithPhotos = this.preserveLocalPhotos(res);
-        this.shoppingLists = listsWithPhotos;
-        localStorage.setItem('backup_lists', JSON.stringify(this.shoppingLists));
-      },
-      error: () => {
-        const backup = localStorage.getItem('backup_lists');
-        if (backup) { this.shoppingLists = JSON.parse(backup); }
-      }
-    });
-  }
-
-  preserveLocalPhotos(apiLists: ShoppingList[]): ShoppingList[] {
-    const backup = localStorage.getItem('backup_lists');
-    if (!backup) return apiLists;
-
-    const localLists: ShoppingList[] = JSON.parse(backup);
-
-    return apiLists.map(apiList => {
-      const localList = localLists.find(l => l.id === apiList.id);
-      
-      if (localList && localList.items) {
-        apiList.items = apiList.items.map((apiItem, index) => {
-          const localItem = localList.items[index];
-          if (localItem && localItem.image) {
-            apiItem.image = localItem.image;
-          }
-          return apiItem;
+    this.dbService.dbState().subscribe((res) => {
+      if (res) {
+        this.dbService.fetchShoppingLists().subscribe(item => {
+          this.shoppingLists = item;
         });
       }
-      return apiList;
     });
   }
 
@@ -87,7 +54,7 @@ export class HomePage implements OnInit {
           text: 'Crear',
           handler: (data) => {
             if (data.nombre && data.nombre.trim().length > 0) {
-              this.addListToApi(data.nombre.trim());
+              this.addListToDB(data.nombre.trim());
             }
           }
         }
@@ -96,37 +63,29 @@ export class HomePage implements OnInit {
     await alert.present();
   }
 
-  addListToApi(name: string) {
+  addListToDB(name: string) {
     const capitalizedName = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
-    const newList = {
-      name: capitalizedName,
-      items: []
-    };
-
-    this.shoppingListService.createList(newList).subscribe(res => {
-      this.shoppingLists.push(res);
-      this.updateLocalBackup();
-      
-      this.goToList(res.id); 
-      this.presentToast('Lista creada exitosamente');
-    });
+    
+    this.dbService.addList(capitalizedName, [])
+      .then(() => {
+        this.presentToast('Lista creada exitosamente');
+      })
+      .catch((e) => {
+        this.presentToast('Error al crear lista: ' + e);
+      });
   }
 
   deleteList(index: number) {
-    const list = this.shoppingLists[index];
-    this.shoppingListService.deleteList(list.id).subscribe({
-      next: () => {
-        this.shoppingLists.splice(index, 1);
-        this.updateLocalBackup(); 
+    // Obtenemos el ID de la lista que queremos borrar
+    const listToDelete = this.shoppingLists[index];
+    
+    this.dbService.deleteList(listToDelete.id)
+      .then(() => {
         this.presentToast('Lista eliminada');
-      },
-      error: () => {
-        this.presentToast('Fallo al conectar: No se puede eliminar sin conexión.');      }
-    });
-  }
-
-  updateLocalBackup() {
-    localStorage.setItem('backup_lists', JSON.stringify(this.shoppingLists));
+      })
+      .catch(e => {
+        this.presentToast('Error al eliminar: ' + e);
+      });
   }
 
   goToList(listId: string) {
