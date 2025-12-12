@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { Router, RouterModule } from '@angular/router';
+import { DbserviceService } from '../services/dbservice';
 
 @Component({
   selector: 'app-register',
@@ -15,7 +16,12 @@ export class RegisterPage implements OnInit {
 
   registroForm: FormGroup;
 
-  constructor(private router: Router, private fb: FormBuilder) {
+  constructor(
+    private router: Router,
+    private fb: FormBuilder,
+    private dbService: DbserviceService,
+    private toastCtrl: ToastController
+  ) {
     this.registroForm = this.fb.group({
       usuario: ['', [Validators.required]],
       password: ['', [Validators.required]],
@@ -34,13 +40,27 @@ export class RegisterPage implements OnInit {
       return alert('Por favor completa todos los campos requeridos');
     }
 
-    const { password, confirmPassword } = this.registroForm.value;
+    const { usuario, password, confirmPassword } = this.registroForm.value;
 
     if (password !== confirmPassword) {
       return alert('Las contraseñas no coinciden');
     }
 
-    console.log('Datos válidos:', this.registroForm.value);
-    this.router.navigate(['/login']);
+    this.dbService.registerUser(usuario, password)
+      .then((res) => {
+        if (res) {
+          this.router.navigate(['/login']);
+        } else {
+          this.presentToast("Error al registrar usuario");
+        }
+      });
+  }
+
+  async presentToast(mensaje: string) {
+    const toast = await this.toastCtrl.create({
+      message: mensaje,
+      duration: 2000
+    });
+    toast.present();
   }
 }

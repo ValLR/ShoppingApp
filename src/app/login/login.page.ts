@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { Router, NavigationExtras, RouterModule } from '@angular/router';
+import { IonicModule, AlertController } from '@ionic/angular';
+import { Router, RouterModule } from '@angular/router';
+import { DbserviceService } from '../services/dbservice';
 
 @Component({
   selector: 'app-login',
@@ -13,18 +14,34 @@ import { Router, NavigationExtras, RouterModule } from '@angular/router';
 })
 export class LoginPage implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private dbService: DbserviceService,
+    private alertCtrl: AlertController
+  ) { }
 
   ngOnInit() {}
 
-  login(form: NgForm) {
+  async login(form: NgForm) {
     if (form.invalid) {
       return;
     }
 
     const username = form.value.username;
-    localStorage.setItem('usuario', username);
+    const password = form.value.password;
+    const validLogin = await this.dbService.loginUser(username, password);
 
-    this.router.navigate(['/home']);
+    if (validLogin) {
+      localStorage.setItem('usuario', username);
+      this.router.navigate(['/home']);
+      form.reset();
+    } else {
+      const alert = await this.alertCtrl.create({
+        header: 'Acceso Denegado',
+        message: 'Usuario o contraseña incorrectos.',
+        buttons: ['Intentar de nuevo']
+      })
+      await alert.present();
+    }
   }
 }

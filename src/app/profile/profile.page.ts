@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
-import { RouterModule, Router } from '@angular/router';
-import { ShoppingListService } from '../services/shopping-list';
+import { Router } from '@angular/router';
+import { DbserviceService } from '../services/dbservice';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
@@ -12,68 +10,66 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, RouterModule]
+  imports: [IonicModule, CommonModule]
 })
-
 export class ProfilePage implements OnInit {
+
   user: string = '';
-  totalLists = 0;
-  lastListId = '—';
-  totalItems = 0;
+  totalLists: number = 0;
+  totalItems: number = 0;
+  lastListId: string = 'Ninguna';
   profileImage: string | undefined;
 
   constructor(
     private router: Router,
-    private shoppingListService: ShoppingListService
-  ) {}
+    private dbService: DbserviceService
+  ) { }
 
   ngOnInit() {
-    const storedUser = localStorage.getItem('usuario');
-    this.user = storedUser ? storedUser : '';
+    this.user = localStorage.getItem('usuario') || 'Invitado';
 
-    const savedPhoto = localStorage.getItem('profile_photo');
-    if (savedPhoto) {
-      this.profileImage = savedPhoto;
-    }
-
-    this.shoppingListService.getLists().subscribe(lists => {
-      this.totalLists = lists.length;
-
-      if (lists.length > 0) {
-        const last: any = lists[lists.length - 1];
-        this.lastListId = last.name || 'Lista #' + last.id;
-
-        this.totalItems = lists.reduce(
-          (acc: number, list: any) => acc + (list.items ? list.items.length : 0),
-          0
-        );
+    this.dbService.dbState().subscribe((isReady) => {
+      if (isReady) {
+        this.dbService.fetchShoppingLists().subscribe(lists => {
+          this.totalLists = lists.length;
+          this.totalItems = lists.reduce((acc, list) => acc + (list.items ? list.items.length : 0), 0);
+          if (lists.length > 0) {
+            this.lastListId = lists[lists.length - 1].name;
+          }
+        });
+      this.loadUserProfile();
       }
     });
   }
 
-async takePicture() {
+  loadUserProfile() {
+    this.dbService.getUser(this.user).then((userData) => {
+      if (userData && userData.image) {
+        this.profileImage = userData.image;
+      }
+    });
+  }
+
+  async takePicture() {
     try {
       const image = await Camera.getPhoto({
-        quality: 90,
+        quality: 40,
         allowEditing: false,
         resultType: CameraResultType.DataUrl,
         source: CameraSource.Prompt
       });
 
       this.profileImage = image.dataUrl;
-      
-      if (this.profileImage) {
-        localStorage.setItem('profile_photo', this.profileImage);
+      if (image.dataUrl) {
+        await this.dbService.updateUserImage(this.user, image.dataUrl);
       }
-      
     } catch (error) {
-      console.log('El usuario canceló o hubo error', error);
+      console.log('No se tomó foto', error);
     }
   }
 
   logout() {
     localStorage.removeItem('usuario');
-    localStorage.removeItem('backup_lists');
     this.router.navigate(['/login']);
   }
 }

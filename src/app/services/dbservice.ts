@@ -11,6 +11,7 @@ export class DbserviceService {
   public database: SQLiteObject | null = null;
   
   tableList: string = "CREATE TABLE IF NOT EXISTS listas_compra(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, items TEXT NOT NULL);";
+  tableUser: string = "CREATE TABLE IF NOT EXISTS usuarios(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL, image TEXT);";
 
   shoppingList = new BehaviorSubject<ShoppingList[]>([]);
   private isDbReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -51,6 +52,7 @@ export class DbserviceService {
     try {
       if (!this.database) return;
       await this.database.executeSql(this.tableList, []);
+      await this.database.executeSql(this.tableUser, []);
       
       this.searchLists();
       this.isDbReady.next(true);
@@ -141,4 +143,57 @@ export class DbserviceService {
     });
     toast.present();
   }
+
+  // Registro
+  registerUser(username: string, pass: string) {
+    if (!this.database) return Promise.reject("BD no lista");
+    
+    return this.database.executeSql('INSERT INTO usuarios(username, password, image) VALUES(?,?, "")', [username, pass])
+      .then(() => {
+        this.presentToast("Usuario registrado");
+        return true;
+      })
+      .catch(e => {
+        this.presentToast("Error al registrar: " + e);
+        return false;
+      });
+  }
+
+  // Login
+  loginUser(username: string, pass: string) {
+    if (!this.database) return Promise.reject("BD no lista");
+    return this.database.executeSql('SELECT * FROM usuarios WHERE username = ? AND password = ?', [username, pass])
+      .then(res => {
+        return res.rows.length > 0;
+      });
+  }
+
+  getUser(username: string) {
+    if (!this.database) return Promise.reject("BD no lista");
+    return this.database.executeSql('SELECT * FROM usuarios WHERE username = ?', [username])
+      .then(res => {
+        if (res.rows.length > 0) {
+          return {
+            id: res.rows.item(0).id,
+            username: res.rows.item(0).username,
+            image: res.rows.item(0).image
+          }
+        }
+        return null;
+      });
+  }
+
+  updateUserImage(username: string, image: string) {
+    if (!this.database) return Promise.reject("BD no lista");
+    return this.database.executeSql('UPDATE usuarios SET image = ? WHERE username = ?', [image, username])
+      .then(() => {
+        this.presentToast("Foto de perfil actualizada");
+        return true;
+      })
+      .catch(e => {
+        this.presentToast("Error actualizando foto: " + e);
+        return false;
+      });
+  }
+
 }
