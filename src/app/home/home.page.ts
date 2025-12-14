@@ -32,6 +32,12 @@ export class HomePage implements OnInit {
     const storedUser = localStorage.getItem('usuario');
     this.user = storedUser ? storedUser : '';
 
+    if (storedUser) {
+      this.user = storedUser.charAt(0).toUpperCase() + storedUser.slice(1);
+    } else {
+      this.user = '';
+    }
+
     this.dbService.dbState().subscribe((res) => {
       if (res) {
         this.dbService.fetchShoppingLists().subscribe(item => {
