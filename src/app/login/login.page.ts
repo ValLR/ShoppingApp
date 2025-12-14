@@ -1,16 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
-import { IonicModule, AlertController } from '@ionic/angular';
-import { Router, RouterModule } from '@angular/router';
+import { NgForm } from '@angular/forms';
+import { AlertController } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { DbserviceService } from '../services/dbservice';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
-  standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, RouterModule]
+  standalone: false,
 })
 export class LoginPage implements OnInit {
 

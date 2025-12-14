@@ -15,8 +15,8 @@ import { RouterModule } from '@angular/router';
     FormsModule,
     IonicModule,
     ListViewPageRoutingModule,
-    ListViewPage,
     RouterModule,
   ],
+  declarations: [ListViewPage]
 })
 export class ListViewPageModule {}

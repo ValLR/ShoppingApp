@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { DbserviceService } from '../services/dbservice';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -9,8 +7,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
   selector: 'app-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
-  standalone: true,
-  imports: [IonicModule, CommonModule]
+  standalone: false,
 })
 export class ProfilePage implements OnInit {
 

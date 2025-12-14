@@ -14,7 +14,7 @@ import { AddItemPage } from './add-item.page';
     FormsModule,
     IonicModule,
     AddItemPageRoutingModule,
-    AddItemPage,
   ],
+  declarations: [AddItemPage]
 })
 export class AddItemPageModule {}

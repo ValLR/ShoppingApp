@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { IonicModule, AnimationController, AlertController, ToastController } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AnimationController, AlertController, ToastController } from '@ionic/angular';
 import { ShoppingList } from '../models/shopping.models';
 import { DbserviceService } from '../services/dbservice';
 
@@ -10,8 +8,7 @@ import { DbserviceService } from '../services/dbservice';
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, RouterModule],
+  standalone: false,
 })
 
 export class HomePage implements OnInit {

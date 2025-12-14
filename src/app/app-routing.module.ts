@@ -29,7 +29,7 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    loadComponent: () => import('./profile/profile.page').then(m => m.ProfilePage),
+    loadChildren: () => import('./profile/profile.module').then(m => m.ProfilePageModule),
     canActivate: [AuthGuard]
   },
   // Not found

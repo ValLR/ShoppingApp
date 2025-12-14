@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule, AlertController, ToastController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
-import { RouterModule } from '@angular/router';
 import { ShoppingList } from '../models/shopping.models';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { DbserviceService } from '../services/dbservice';
@@ -12,8 +9,7 @@ import { DbserviceService } from '../services/dbservice';
   selector: 'app-list-view',
   templateUrl: './list-view.page.html',
   styleUrls: ['./list-view.page.scss'],
-  standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, RouterModule]
+  standalone: false,
 })
 export class ListViewPage implements OnInit {
 
@@ -92,20 +88,6 @@ export class ListViewPage implements OnInit {
       this.saveToDB();
     }
   }
-
-  // autoSave() {
-  //   this.updateLocalBackup();
-
-  //   if (this.listId && this.list) {
-  //     const listaParaNube = JSON.parse(JSON.stringify(this.list));
-  //     listaParaNube.items.forEach((i: any) => delete i.image);
-
-  //     this.shoppingListService.updateList(this.listId, listaParaNube).subscribe({
-  //       next: () => console.log('Texto sincronizado con API (Sin fotos)'),
-  //       error: (err) => console.log('Error API (Posiblemente 413)', err)
-  //     });
-  //   }
-  // }
 
   updateLocalBackup() {
     const backup = localStorage.getItem('backup_lists');
