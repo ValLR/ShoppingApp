@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { AnimationController, AlertController, ToastController } from '@ionic/angular';
+import { AnimationController, AlertController, ToastController, Platform } from '@ionic/angular';
 import { ShoppingList } from '../models/shopping.models';
 import { DbserviceService } from '../services/dbservice';
 
@@ -25,7 +25,8 @@ export class HomePage implements OnInit {
     private animationCtrl: AnimationController,
     private dbService: DbserviceService,
     private alertCtrl: AlertController,
-    private toastCtrl: ToastController,
+    private platform: Platform,
+    private toastCtrl: ToastController
   ) {}
 
   ngOnInit() {
@@ -66,20 +67,35 @@ export class HomePage implements OnInit {
     await alert.present();
   }
 
-  addListToDB(name: string) {
+  async addListToDB(name: string) {
     const capitalizedName = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
     
-    this.dbService.addList(capitalizedName, [])
-      .then(() => {
+    if (!this.platform.is('hybrid')) {
+        console.warn('Web mode: Creando lista');        
+        this.shoppingLists.push({
+            id: Date.now().toString(),
+            name: capitalizedName,
+            items: []
+        });
+        
+        this.presentToast('Lista creada (Web)');
+        return;
+    }
+
+    try {
+        await this.dbService.addList(capitalizedName, []);
         this.presentToast('Lista creada exitosamente');
-      })
-      .catch((e) => {
+    } catch (e) {
         this.presentToast('Error al crear lista: ' + e);
-      });
+    }
   }
 
   deleteList(index: number) {
-    // Obtenemos el ID de la lista que queremos borrar
+    if (!this.platform.is('hybrid')) {
+        this.shoppingLists.splice(index, 1);
+        this.presentToast('Lista eliminada (Simulación)');
+        return;
+    }
     const listToDelete = this.shoppingLists[index];
     
     this.dbService.deleteList(listToDelete.id)

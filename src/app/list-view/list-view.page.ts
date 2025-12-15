@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, ToastController, Platform } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { ShoppingList } from '../models/shopping.models';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -22,6 +22,7 @@ export class ListViewPage implements OnInit {
     private alertCtrl: AlertController,
     private toastCtrl: ToastController,
     private dbService: DbserviceService,
+    private platform: Platform
   ) {}
 
   ngOnInit() {
@@ -32,7 +33,6 @@ export class ListViewPage implements OnInit {
         if (isReady) {
           this.dbService.fetchShoppingLists().subscribe((lists) => {
             const found = lists.find(l => l.id === this.listId);
-
             if (found) {
               this.list = found;
             }
@@ -121,6 +121,11 @@ export class ListViewPage implements OnInit {
   }
 
   saveToDB() {
+    if (!this.platform.is('hybrid')) {
+        console.warn('Web Mode: Guardado simulado en memoria (Sin error)');
+        return;
+    }
+
     if (this.listId && this.list) {
       this.dbService.updateList(this.list.id, this.list.name, this.list.items)
         .then(() => {
