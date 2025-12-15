@@ -1,4 +1,4 @@
-# ShoppingListApp (Gestor de Lista de Compras)
+# Listify App (Gestor de Lista de Compras)
 
 Aplicación que gestiona listas de compras, desarrollado con Ionic Angular.
 
@@ -21,7 +21,7 @@ La aplicación permite a los usuarios crear y gestionar múltiples listas de com
 
 2.  **Entrar a la carpeta del proyecto:**
     ```bash
-    cd ShoppingListApp
+    cd Listify App
     ```
 
 3.  **Instalar las dependencias:**

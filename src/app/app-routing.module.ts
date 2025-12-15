@@ -30,7 +30,7 @@ const routes: Routes = [
   {
     path: 'profile',
     loadChildren: () => import('./profile/profile.module').then(m => m.ProfilePageModule),
-    canActivate: [AuthGuard]
+    // canActivate: [AuthGuard]
   },
   // Not found
   {

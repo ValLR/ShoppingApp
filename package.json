@@ -1,7 +1,7 @@
 {
-  "name": "ShoppingListApp",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
+  "name": "listify-app",
+  "version": "2.0.0",
+  "author": "Valentina López Recabal vale.lopezr@duocuc.cl",
   "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
@@ -67,5 +67,5 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.8.0"
   },
-  "description": "An Ionic project"
+  "description": "Aplicacion de creación y gestión de listas de compra"
 }

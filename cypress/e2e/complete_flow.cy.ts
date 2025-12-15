@@ -159,7 +159,7 @@ describe('E2E: Complete User Flow (Demo)', () => {
     pause(200);
   });
 
-it('Debe manejar rutas inexistentes (404)', () => {
+it('Must manage unexistant routes (404)', () => {
     cy.clearAllLocalStorage();
     cy.window().then((win) => win.localStorage.clear());
 
