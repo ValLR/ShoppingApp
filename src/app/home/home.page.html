@@ -48,10 +48,66 @@
     </ion-list>
   </ng-template>
 
+<div class="ion-padding-top">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h3>Ideas para cocinar</h3>
+    </div>
+
+    <div *ngIf="categories.length === 0" class="ion-text-center">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p><small>Buscando ingredientes...</small></p>
+    </div>
+
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col size="6" size-md="4" *ngFor="let cat of categories">
+          <ion-card button (click)="seeMealsByCategory(cat)" class="category-card">
+            <img [src]="cat.strCategoryThumb" alt="food" style="height: 100px; width: 100%; object-fit: cover;" />
+            <ion-card-header>
+              <ion-card-subtitle>{{ cat.strCategory }}</ion-card-subtitle>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="createNewList()" color="secondary">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="setOpen(false)">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>{{ selectedCategory }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="setOpen(false)">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      
+      <ion-content class="ion-padding">
+        
+        <div *ngIf="mealsList.length === 0" class="ion-text-center ion-padding">
+          <ion-spinner></ion-spinner>
+          <p>Buscando recetas...</p>
+        </div>
 
+        <ion-list>
+          <ion-item button *ngFor="let meal of mealsList" (click)="chooseMeal(meal)">
+            <ion-thumbnail slot="start">
+              <img [src]="meal.strMealThumb">
+            </ion-thumbnail>
+            <ion-label>
+              <h2>{{ meal.strMeal }}</h2> </ion-label>
+            <ion-icon name="add-circle-outline" slot="end" color="secondary"></ion-icon>
+          </ion-item>
+        </ion-list>
+
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

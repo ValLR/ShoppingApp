@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AnimationController, AlertController, ToastController, Platform } from '@ionic/angular';
 import { ShoppingList } from '../models/shopping.models';
 import { DbserviceService } from '../services/dbservice';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-home',
@@ -19,6 +20,9 @@ export class HomePage implements OnInit {
 
   user: string = '';
   shoppingLists: ShoppingList[] = [];
+  categories: any[] = [];isModalOpen = false;
+  mealsList: any[] = [];
+  selectedCategory: string = '';
 
   constructor(
     private router: Router,
@@ -26,7 +30,8 @@ export class HomePage implements OnInit {
     private dbService: DbserviceService,
     private alertCtrl: AlertController,
     private platform: Platform,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private apiService: ApiService
   ) {}
 
   ngOnInit() {
@@ -44,7 +49,16 @@ export class HomePage implements OnInit {
         this.dbService.fetchShoppingLists().subscribe(item => {
           this.shoppingLists = item;
         });
+        this.loadCaterories(); 
+      } else {
+        this.loadCaterories();
       }
+    });
+  }
+
+  loadCaterories() {
+    this.apiService.getCategories().subscribe(data => {
+      this.categories = data;
     });
   }
 
@@ -161,5 +175,191 @@ export class HomePage implements OnInit {
       iconAnimation.play();
       textAnimation.play();
     }
+  }
+
+  async addFromAPI(category: any) {
+    if (this.shoppingLists.length === 0) {
+      this.presentToast('Primero crea una lista de compras.');
+      return;
+    }
+
+    const inputs = this.shoppingLists.map(lista => ({
+      type: 'radio' as const,
+      label: lista.name,
+      value: lista,
+    }));
+
+    const alert = await this.alertCtrl.create({
+      header: 'Agregar ' + category.strCategory,
+      subHeader: '¿A qué lista quieres agregar este ítem?',
+      inputs: inputs,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Agregar',
+          handler: (selectedList) => {
+            if (selectedList) {
+              this.saveItemInList(selectedList, category.strCategory);
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async saveItemInList(destinyList: any, itemList: string) {
+    if (!destinyList.items) {
+      destinyList.items = [];
+    }
+
+    const newItem = {
+      name: itemList,
+      checked: false,
+      image: '' 
+    };
+
+    destinyList.items.push(newItem);
+
+    if (this.platform.is('hybrid')) {
+      try {
+        console.log('Intentando guardar en BD:', destinyList);
+        
+        await this.dbService.updateList(destinyList.id, destinyList.name, destinyList.items);        
+        this.presentToast(`Agregado a ${destinyList.name}`);
+      } catch (e) {
+        console.error('Error guardando en SQLite', e);
+        this.presentToast('Error al guardar en base de datos');
+      }
+    } else {
+      this.presentToast(`Agregado a ${destinyList.name} (Modo Web)`);
+    }
+  }
+
+  seeMealsByCategory(category: any) {
+    this.selectedCategory = category.strCategory;
+    this.mealsList = [];
+    this.setOpen(true);
+
+    this.apiService.getMealsByCategory(this.selectedCategory).subscribe(meals => {
+      this.mealsList = meals;
+    });    
+  }
+
+  setOpen(isOpen: boolean) {
+    this.isModalOpen = isOpen;
+  }
+
+  chooseMeal(meal: any) {
+    this.setOpen(false);
+
+    this.apiService.getMealDetails(meal.idMeal).subscribe(fullMeal => {
+      if (fullMeal) {
+        const ingredientes = this.extractIngredients(fullMeal);
+        
+        this.addIngredientsToList(fullMeal.strMeal, ingredientes);
+      } else {
+        this.presentToast('Error al obtener los ingredientes.');
+      }
+    });
+  }
+
+  extractIngredients(meal: any): string[] {
+    let ingredients: string[] = [];
+    
+    for (let i = 1; i <= 20; i++) {
+      const ingredientName = meal[`strIngredient${i}`];
+      if (ingredientName && ingredientName.trim() !== "") {
+        ingredients.push(ingredientName);
+      }
+    }
+    return ingredients;
+  }
+
+  async addIngredientsToList(mealName: string, ingredients: string[]) {
+    if (this.shoppingLists.length === 0) {
+      this.presentToast('Primero crea una lista de compras.');
+      return;
+    }
+
+    const inputs = this.shoppingLists.map(lista => ({
+      type: 'radio' as const,
+      label: lista.name,
+      value: lista,
+    }));
+
+    const alert = await this.alertCtrl.create({
+      header: 'Ingredientes de ' + mealName,
+      subHeader: `Se agregarán ${ingredients.length} ingredientes a tu lista.`,
+      inputs: inputs,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Agregar',
+          handler: (selectedList) => {
+            if (selectedList) {
+              this.addMultipleItems(selectedList, ingredients);
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async addMultipleItems(destinyList: any, ingredients: string[]) {
+    if (!destinyList.items) destinyList.items = [];
+
+    const nuevosItems = ingredients.map(nombre => ({
+      name: nombre,
+      checked: false,
+      image: '' 
+    }));
+
+    destinyList.items.push(...nuevosItems);
+    if (this.platform.is('hybrid')) {
+      try {
+        await this.dbService.updateList(destinyList.id, destinyList.name, destinyList.items);
+        this.presentToast(`${ingredients.length} ingredientes agregados a ${destinyList.name}`);
+      } catch (e) {
+        console.error(e);
+        this.presentToast('Error guardando en BD');
+      }
+    } else {
+      localStorage.setItem('backup_lists', JSON.stringify(this.shoppingLists));
+      this.presentToast(`${ingredients.length} ingredientes agregados (Web)`);
+    }
+  }
+
+  async addToList(mealName: string) {
+    if (this.shoppingLists.length === 0) {
+      this.presentToast('Primero crea una lista de compras.');
+      return;
+    }
+
+    const inputs = this.shoppingLists.map(lista => ({
+      type: 'radio' as const,
+      label: lista.name,
+      value: lista,
+    }));
+
+    const alert = await this.alertCtrl.create({
+      header: 'Agregar Plato',
+      subHeader: `¿A qué lista quieres agregar "${mealName}"?`, // Mostramos el nombre del plato
+      inputs: inputs,
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Agregar',
+          handler: (selectedList) => {
+            if (selectedList) {
+              this.saveItemInList(selectedList, mealName);
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }

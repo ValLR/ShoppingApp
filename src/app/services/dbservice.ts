@@ -12,6 +12,7 @@ export class DbserviceService {
   
   tableList: string = "CREATE TABLE IF NOT EXISTS listas_compra(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, items TEXT NOT NULL);";
   tableUser: string = "CREATE TABLE IF NOT EXISTS usuarios(id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL, image TEXT);";
+  tableCategories: string = "CREATE TABLE IF NOT EXISTS categories(idCategory TEXT PRIMARY KEY, strCategory TEXT, strCategoryThumb TEXT, strCategoryDescription TEXT);";
 
   shoppingList = new BehaviorSubject<ShoppingList[]>([]);
   private isDbReady: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -53,7 +54,8 @@ export class DbserviceService {
       if (!this.database) return;
       await this.database.executeSql(this.tableList, []);
       await this.database.executeSql(this.tableUser, []);
-      
+      await this.database.executeSql(this.tableCategories, []);
+
       this.searchLists();
       this.isDbReady.next(true);
     } catch (e) {
@@ -194,6 +196,44 @@ export class DbserviceService {
         this.presentToast("Error actualizando foto: " + e);
         return false;
       });
+  }
+
+// API SYNC 
+  async saveCategories(categories: any[]) {
+    if (!this.database) return;
+
+    await this.database.executeSql('DELETE FROM categories', []);
+
+    const sql = 'INSERT INTO categories (idCategory, strCategory, strCategoryThumb, strCategoryDescription) VALUES (?, ?, ?, ?)';
+
+    for (let item of categories) {
+      await this.database.executeSql(sql, [
+        item.idCategory, 
+        item.strCategory, 
+        item.strCategoryThumb, 
+        item.strCategoryDescription
+      ]);
+    }
+    console.log('Datos de API guardados en SQLite');
+  }
+
+  async getLocalCategories(): Promise<any[]> {
+    if (!this.database) return [];
+
+    const res = await this.database.executeSql('SELECT * FROM categories', []);
+    let items = [];
+
+    if (res.rows.length > 0) {
+      for (let i = 0; i < res.rows.length; i++) {
+        items.push({
+          idCategory: res.rows.item(i).idCategory,
+          strCategory: res.rows.item(i).strCategory,
+          strCategoryThumb: res.rows.item(i).strCategoryThumb,
+          strCategoryDescription: res.rows.item(i).strCategoryDescription
+        });
+      }
+    }
+    return items;
   }
 
 }
